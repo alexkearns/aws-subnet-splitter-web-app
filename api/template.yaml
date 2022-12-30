@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  subnet-splitter-api
+
+  SAM Template for subnet-splitter-api
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  SubnetSplitterApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Cors:
+        AllowMethods: "'OPTIONS,POST'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
+
+  SubnetSplitterFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: subnet_splitter/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - arm64
+      Events:
+        SplitSubnet:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /split-subnet
+            Method: post
+            RestApiId: !Ref SubnetSplitterApi
+
+Outputs:
+  SubnetSplitterApiUrl:
+    Description: "API Gateway endpoint URL for Subnet Splitter function"
+    Value: !Sub "https://${SubnetSplitterApi}.execute-api.${AWS::Region}.amazonaws.com/v1/split-subnet/"
+  SubnetSplitterFunction:
+    Description: "Subnet Splitter Lambda Function ARN"
+    Value: !GetAtt SubnetSplitterFunction.Arn
+  SubnetSplitterFunctionIamRole:
+    Description: "Implicit IAM Role created for Subnet Splitter function"
+    Value: !GetAtt SubnetSplitterFunction.Arn
