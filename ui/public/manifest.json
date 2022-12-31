@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "AWS Subnet Splitter",
+  "name": "AWS Subnet Splitter",
   "icons": [
     {
       "src": "favicon.ico",
