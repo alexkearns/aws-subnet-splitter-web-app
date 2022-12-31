@@ -11,14 +11,28 @@ Globals:
     Timeout: 3
 
 Resources:
+  SubnetSplitterApiCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: "api.aws-subnet-splitter.alexkearns.co.uk"
+      ValidationMethod: DNS
+
   SubnetSplitterApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: v1
+      DisableExecuteApiEndpoint: True
       Cors:
         AllowMethods: "'OPTIONS,POST'"
         AllowHeaders: "'Content-Type'"
         AllowOrigin: "'*'"
+      Domain:
+        BasePath:
+          - "v1"
+        CertificateArn: !Ref SubnetSplitterApiCertificate
+        DomainName: "api.aws-subnet-splitter.alexkearns.co.uk"
+        Route53:
+          HostedZoneName: "aws-subnet-splitter.alexkearns.co.uk."
 
   SubnetSplitterFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
